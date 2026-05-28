@@ -200,22 +200,22 @@ st.markdown("""
         <div class="feature-card">
             <div class="feature-icon">⛓️</div>
             <h4>Estrutura Principal</h4>
-            <p><strong>PA12 + Fibras de Carbono:</strong> Garante uma elevada rigidez estrutural e durabilidade mecânica a cargas torcionais, mantendo o peso total do exoesqueleto minimizado.</p>
+            <p><strong>PA12 + Fibras de Carbono</strong></p>
         </div>
         <div class="feature-card">
             <div class="feature-icon">🛡️</div>
             <h4>Camada de Amortecimento</h4>
-            <p><strong>Espuma EVA (Etileno Acetato de Vinila):</strong> Absorve vibrações do motor e distribui as forças de pressão mecânica uniformemente ao longo do segmento do braço.</p>
+            <p><strong>Espuma EVA (Etileno Acetato de Vinila)</strong></p>
         </div>
         <div class="feature-card">
             <div class="feature-icon">🧪</div>
             <h4>Interface com a Pele</h4>
-            <p><strong>Silicone Elastómero (PDMS):</strong> Material totalmente biocompatível, hipoalergénico e maleável, que evita lesões cutâneas por fricção contínua durante as sessões.</p>
+            <p><strong>Silicone Elastómero (PDMS)</strong></p>
         </div>
         <div class="feature-card">
             <div class="feature-icon">🎗️</div>
             <h4>Camada de Ajuste</h4>
-            <p><strong>Velcro de Alta Fixação:</strong> Permite uma fixação rápida, segura e totalmente adaptável a diferentes perímetros e morfologias de braço.</p>
+            <p><strong>Velcro de Alta Fixação</strong></p>
         </div>
     </div>
 </div>
