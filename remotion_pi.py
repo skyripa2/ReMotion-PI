@@ -138,54 +138,34 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ── ARQUITETURA DO SISTEMA (Processamento MATLAB) ───────────────────────────
-st.markdown("""
-<div class="section">
-    <div class="section-title">🔄 Arquitetura do Sistema</div>
-    <div class="arch-grid">
-        <div class="arch-card">
-            <div class="arch-step">Passo 1</div>
-            <h5>Aquisição e Limpeza do Sinal</h5>
-            <p>Leitura inicial dos dados dos canais EMG dos músculos (RBB, RDA, RDM, RDP).</p>
-        </div>
-        <div class="arch-card">
-            <div class="arch-step">Passo 2</div>
-            <h5>Filtragem</h5>
-            <p>Tratamento do sinal e remoção de ruídos para isolar a componente elétrica muscular real.</p>
-        </div>
-        <div class="arch-card">
-            <div class="arch-step">Passo 3</div>
-            <h5>Calibração de Referência (subMVC)</h5>
-            <p>Calibração do exoesqueleto baseada em contrações inferiores ao esforço máximo.</p>
-        </div>
-        <div class="arch-card">
-            <div class="arch-step">Passo 4</div>
-            <h5>Limites Físicos</h5>
-            <p>Configuração das barreiras mecânicas de segurança: Máximo Cotovelo = 60 Nm | Máximo Ombro = 70 Nm.</p>
-        </div>
-        <div class="arch-card">
-            <div class="arch-step">Passo 5</div>
-            <h5>Torque do Paciente ao Longo do Tempo</h5>
-            <p>Cálculo da percentagem de esforço para estimar o torque humano gerado.</p>
-        </div>
-        <div class="arch-card">
-            <div class="arch-step">Passo 6</div>
-            <h5>Cálculo do Défice Biológico</h5>
-            <p>Determinação da assistência necessária: Torque em Falta = Torque Desejado - Torque do Paciente.</p>
-        </div>
-        <div class="arch-card">
-            <div class="arch-step">Passo 7</div>
-            <h5>Saturação</h5>
-            <p>Garantia de que os valores de apoio calculados não ultrapassam os limites de segurança predefinidos.</p>
-        </div>
-        <div class="arch-card">
-            <div class="arch-step">Passo 8</div>
-            <h5>Atuação e Suavização</h5>
-            <p>Envio e otimização do perfil de força para aplicação suave e segura no motor do exoesqueleto.</p>
-        </div>
-    </div>
-</div>
-""", unsafe_allow_html=True)
+# ── ARQUITETURA DO SISTEMA (2 LINHAS DE 4 PASSOS) ─────────────────────────────
+st.markdown('<div class="section"><div class="section-title">🔄 Arquitetura do Sistema</div>', unsafe_allow_html=True)
+
+# Primeira Linha (Passos 1 ao 4)
+l1_c1, l1_c2, l1_c3, l1_c4 = st.columns(4, gap="medium")
+with l1_c1:
+    st.markdown("""<div class="arch-card"><div class="arch-step">Passo 1</div><h5>Aquisição e Limpeza</h5><p>Leitura inicial dos dados dos canais EMG dos músculos (RBB, RDA, RDM, RDP).</p></div>""", unsafe_allow_html=True)
+with l1_c2:
+    st.markdown("""<div class="arch-card"><div class="arch-step">Passo 2</div><h5>Filtragem</h5><p>Tratamento do sinal e remoção de ruídos para isolar a componente elétrica muscular real.</p></div>""", unsafe_allow_html=True)
+with l1_c3:
+    st.markdown("""<div class="arch-card"><div class="arch-step">Passo 3</div><h5>Calibração (subMVC)</h5><p>Calibração do exoesqueleto baseada em contrações inferiores ao esforço máximo voluntário.</p></div>""", unsafe_allow_html=True)
+with l1_c4:
+    st.markdown("""<div class="arch-card"><div class="arch-step">Passo 4</div><h5>Limites Físicos</h5><p>Configuração das barreiras mecânicas: Cotovelo Máx = 60 Nm | Ombro Máx = 70 Nm.</p></div>""", unsafe_allow_html=True)
+
+st.markdown("<div style='margin-top: 1rem;'></div>", unsafe_allow_html=True)
+
+# Segunda Linha (Passos 5 ao 8)
+l2_c1, l2_c2, l2_c3, l2_c4 = st.columns(4, gap="medium")
+with l2_c1:
+    st.markdown("""<div class="arch-card"><div class="arch-step">Passo 5</div><h5>Torque do Paciente</h5><p>Cálculo da percentagem de esforço contínuo para estimar o torque humano gerado.</p></div>""", unsafe_allow_html=True)
+with l2_c2:
+    st.markdown("""<div class="arch-card"><div class="arch-step">Passo 6</div><h5>Défice Biológico</h5><p>Determinação da assistência: Torque em Falta = Torque Desejado - Torque do Paciente.</p></div>""", unsafe_allow_html=True)
+with l2_c3:
+    st.markdown("""<div class="arch-card"><div class="arch-step">Passo 7</div><h5>Saturação</h5><p>Garantia de que os valores de apoio calculados não ultrapassam os limites de segurança.</p></div>""", unsafe_allow_html=True)
+with l2_c4:
+    st.markdown("""<div class="arch-card"><div class="arch-step">Passo 8</div><h5>Atuação e Suavização</h5><p>Envio e otimização do perfil de força para aplicação suave no motor do exoesqueleto.</p></div>""", unsafe_allow_html=True)
+
+st.markdown('</div>', unsafe_allow_html=True)
 
 # ── O PROJETO + IMAGEM CAD ───────────────────────────────────────────────────
 col_t, col_i = st.columns([1.3, 1], gap="large")
@@ -210,6 +190,36 @@ with col_i:
         st.info("💡 Coloque o ficheiro 'exoesqueleto.png' no diretório para visualizar o modelo cinemático 3D.")
 
 st.markdown("<br>", unsafe_allow_html=True)
+
+# ── SELECÇÃO DE MATERIAIS DO DISPOSITIVO (NOVA) ───────────────────────────────
+st.markdown("""
+<div class="section">
+    <div class="section-title">🛠️ Seleção de Materiais e Biocompatibilidade</div>
+    <p>A escolha dos materiais do protótipo baseou-se no equilíbrio entre resistência estrutural mecânica, leveza e conforto anatómico para o paciente:</p>
+    <div class="feature-grid">
+        <div class="feature-card">
+            <div class="feature-icon">⛓️</div>
+            <h4>Estrutura Principal</h4>
+            <p><strong>PA12 + Fibras de Carbono:</strong> Garante uma elevada rigidez estrutural e durabilidade mecânica a cargas torcionais, mantendo o peso total do exoesqueleto minimizado.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🛡️</div>
+            <h4>Camada de Amortecimento</h4>
+            <p><strong>Espuma EVA (Etileno Acetato de Vinila):</strong> Absorve vibrações do motor e distribui as forças de pressão mecânica uniformemente ao longo do segmento do braço.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🧪</div>
+            <h4>Interface com a Pele</h4>
+            <p><strong>Silicone Elastómero (PDMS):</strong> Material totalmente biocompatível, hipoalergénico e maleável, que evita lesões cutâneas por fricção contínua durante as sessões.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🎗️</div>
+            <h4>Camada de Ajuste</h4>
+            <p><strong>Velcro de Alta Fixação:</strong> Permite uma fixação rápida, segura e totalmente adaptável a diferentes perímetros e morfologias de braço.</p>
+        </div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
 # ── OS TRÊS PILARES CIENTÍFICOS (Tecnologia) ──────────────────────────────────
 st.markdown("""
