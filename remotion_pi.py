@@ -107,11 +107,11 @@ st.markdown("""
 <div class="hero">
     <div class="hero-tag">🔬 Projeto Integrador · Engenharia Biomédica · UMinho</div>
     <h1>Re<span>Motion</span></h1>
-    <div class="hero-sub">Modelação e Controlo de um Exoesqueleto Robótico de Membro Superior</div>
+    <div class="hero-sub">Exoesqueleto Robótico com Controlo Eletromiográfico</div>
     <div class="hero-desc">
-        Desenvolvimento de uma solução robótica assistiva para o cotovelo focada na reabilitação ativa pós-AVC. 
-        O sistema integra controlo mioelétrico proporcional submáximo, estratégias adaptativas <i>Assist-As-Needed</i> 
-        e um modelo dinâmico de fadiga muscular simulado em ambiente virtual integrado.
+        Desenvolvimento de uma solução robótica assistiva para membros superiores focada na reabilitação pós-AVC. 
+        O sistema integra controlo eletriomiográfico submáximo, estratégias adaptativas <i>Assist-As-Needed</i> 
+        e um sistema dinâmico de fadiga muscular simulado em ambiente virtual integrado.
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -133,41 +133,55 @@ st.markdown("""
     </div>
     <div class="stat-card">
         <div class="stat-number">135°</div>
-        <div class="stat-label">Amplitude de flexão fisiológica do cotovelo visada pelo algoritmo de controlo do protótipo</div>
+        <div class="stat-label">Amplitude de flexão fisiológica do braço</div>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-# ── ARQUITETURA DO SISTEMA (Malha de Controlo) ────────────────────────────────
+# ── ARQUITETURA DO SISTEMA (Processamento MATLAB) ───────────────────────────
 st.markdown("""
 <div class="section">
-    <div class="section-title">🔄 Arquitetura do Sistema e Controlo em Malha Fechada</div>
-    <p>O ReMotion opera sob uma malha de controlo fechada que une a intenção biológica do paciente à resposta mecânica do atuador virtual:</p>
+    <div class="section-title">🔄 Arquitetura do Sistema</div>
     <div class="arch-grid">
         <div class="arch-card">
             <div class="arch-step">Passo 1</div>
-            <h5>Atividade Muscular</h5>
-            <p>O bíceps gera um sinal elétrico proporcional à intenção de flexão mecânica.</p>
+            <h5>Aquisição e Limpeza do Sinal</h5>
+            <p>Leitura inicial dos dados dos canais EMG dos músculos (RBB, RDA, RDM, RDP).</p>
         </div>
         <div class="arch-card">
             <div class="arch-step">Passo 2</div>
-            <h5>Aquisição sEMG</h5>
-            <p>Filtragem, retificação e cálculo do envelope de sinal (RMS) normalizado por subMVC.</p>
+            <h5>Filtragem</h5>
+            <p>Tratamento do sinal e remoção de ruídos para isolar a componente elétrica muscular real.</p>
         </div>
         <div class="arch-card">
             <div class="arch-step">Passo 3</div>
-            <h5>Algoritmo (MATLAB)</h5>
-            <p>Processamento do torque humano real, avaliação do erro de rampa e cálculo da fadiga.</p>
+            <h5>Calibração de Referência (subMVC)</h5>
+            <p>Calibração do exoesqueleto baseada em contrações inferiores ao esforço máximo.</p>
         </div>
         <div class="arch-card">
             <div class="arch-step">Passo 4</div>
-            <h5>Atuação (MuJoCo)</h5>
-            <p>Injeção do torque de impedância corrigido no motor virtual do braço robótico.</p>
+            <h5>Limites Físicos</h5>
+            <p>Configuração das barreiras mecânicas de segurança: Máximo Cotovelo = 60 Nm | Máximo Ombro = 70 Nm.</p>
         </div>
         <div class="arch-card">
             <div class="arch-step">Passo 5</div>
-            <h5>Feedback Cinemático</h5>
-            <p>Os sensores angulares atualizam o erro de trajetória, reiniciando o loop de controlo.</p>
+            <h5>Torque do Paciente ao Longo do Tempo</h5>
+            <p>Cálculo da percentagem de esforço para estimar o torque humano gerado.</p>
+        </div>
+        <div class="arch-card">
+            <div class="arch-step">Passo 6</div>
+            <h5>Cálculo do Défice Biológico</h5>
+            <p>Determinação da assistência necessária: Torque em Falta = Torque Desejado - Torque do Paciente.</p>
+        </div>
+        <div class="arch-card">
+            <div class="arch-step">Passo 7</div>
+            <h5>Saturação</h5>
+            <p>Garantia de que os valores de apoio calculados não ultrapassam os limites de segurança predefinidos.</p>
+        </div>
+        <div class="arch-card">
+            <div class="arch-step">Passo 8</div>
+            <h5>Atuação e Suavização</h5>
+            <p>Envio e otimização do perfil de força para aplicação suave e segura no motor do exoesqueleto.</p>
         </div>
     </div>
 </div>
@@ -179,8 +193,8 @@ with col_t:
     st.markdown("""
     <div class="section">
         <div class="section-title">🦾 Desenvolvimento e Engenharia do Protótipo</div>
-        <p>O projeto aborda a modelação mecânica e o controlo dinâmico de uma ortótese ativa para o cotovelo. Utilizando dados de sEMG importados e processados via <strong>MATLAB</strong>, o sistema comanda o modelo físico construído e simulado no ecossistema de física <strong>MuJoCo</strong>.</p>
-        <p>Diferente dos sistemas robóticos puramente passivos ou de trajetória rígida, o ReMotion foca-se na <strong>reabilitação orientada à tarefa e baseada no desafio</strong>. Através de leis de controlo adaptativas, o robô atua como um parceiro elástico: monitoriza as limitações do utilizador e fornece o binário estritamente necessário para que a trajetória fisiológica seja cumprida com sucesso.</p>
+        <p>O projeto aborda a modelação mecânica e o controlo dinâmico de um exoesqueleto para membros superiores. Utilizando dados de EMG importados e processados via <strong>MATLAB</strong>, o sistema comanda o modelo físico construído e simulado no <strong>MuJoCo</strong>.</p>
+        <p>Diferente dos sistemas robóticos puramente passivos, o ReMotion foca-se na <strong>reabilitação assistida e eficaz</strong>. Através do controlo por impedância, o o exoesqueleto tem em conta a gravidade e peso dos componentes, e o erro de posição.</p>
     </div>
     """, unsafe_allow_html=True)
 with col_i:
@@ -200,22 +214,22 @@ st.markdown("<br>", unsafe_allow_html=True)
 # ── OS TRÊS PILARES CIENTÍFICOS (Tecnologia) ──────────────────────────────────
 st.markdown("""
 <div class="section">
-    <div class="section-title">⚙️ Estratégias de Modelação e Controlo</div>
+    <div class="section-title">⚙️ Tecnologias utilizadas</div>
     <div class="feature-grid">
         <div class="feature-card">
             <div class="feature-icon">📡</div>
-            <h4>Controlo Proporcional por sEMG (subMVC)</h4>
-            <p>O torque ativo gerado pelo utilizador é estimado diretamente do processamento do sinal elétrico do bíceps. A calibração assenta numa Contração Voluntária Máxima Submáxima (subMVC). Isto permite que pacientes com elevado défice motor consigam comandar o atuador sem sofrer espasmos ou lesões por sobre-esforço.</p>
+            <h4>Controlo através de EMG com subMVC</h4>
+            <p>O torque gerado pelo paciente é estimado diretamente do processamento do sinal. A calibração é feita numa Contração Voluntária Máxima Submáxima (subMVC). Isto permite que pacientes com elevado défice motor consigam utilizar o exoesqueleto sem sofrer espasmos ou lesões por esforço em demasia.</p>
         </div>
         <div class="feature-card">
             <div class="feature-icon">🤝</div>
             <h4>Algoritmo Assist-As-Needed (AAN)</h4>
-            <p>Implementado através de uma lei de Controlo por Impedância Proporcional. O exoesqueleto simula uma mola virtual rígida ($K = 40$ Nm/rad) apenas se detetar que o braço do paciente falha ou fica para trás relativamente à trajetória teórica de rampa, mantendo-se complacente e transparente enquanto a força do utilizador for suficiente.</p>
+            <p>Implementado através de Controlo por Impedância, o exoesqueleto simula uma mola virtual quando deteta que o braço do paciente falha ou fica para trás relativamente ao ângulo desejado, mantendo-se transparente enquanto a força do utilizador for suficiente.</p>
         </div>
         <div class="feature-card">
             <div class="feature-icon">🔋</div>
-            <h4>Modelo Dinâmica de Fadiga Muscular</h4>
-            <p>Baseado num modelo matemático diferencial de primeira ordem. Quando o torque exercido ultrapassa o limiar de esforço estável de 30 Nm, a fadiga acumula-se continuamente. Ao cruzar o limiar crítico de tolerância neuromuscular (definido entre 70%-80%), o robô altera dinamicamente os ganhos de impedância e assume a compensação motora total.</p>
+            <h4>Sistema de Deteção de Fadiga</h4>
+            <p>Quando o torque exercido ultrapassa o limite de esforço estável de 30 Nm, a fadiga acumula-se continuamente. Ao cruzar o limite de tolerância (75%), o exoesqueleto altera o torque humano que é considerado na equação de impedância e fornece mais força para o movimento</p>
         </div>
     </div>
 </div>
@@ -224,35 +238,34 @@ st.markdown("""
 # ── ANÁLISE DE SOLUÇÕES (Estado da Arte) ──────────────────────────────────────
 st.markdown("""
 <div class="section">
-    <div class="section-title">🔍 Enquadramento no Estado da Arte</div>
-    <p>Comparação das metodologias avaliadas no projeto face às abordagens atuais de reabilitação neuromuscular:</p>
+    <div class="section-title">🔍 Estado da Arte</div>
+    <p>Comparação das metodologias avaliadas no projeto face às abordagens atuais de reabilitação:</p>
     <table class="comp-table">
-        <thead><tr><th>Paradigma de Controlo</th><th>Abordagem Mecânica / Sinais</th><th>Limitação Identificada na Literatura</th></tr></thead>
+        <thead><tr><th>Método</th><th>Abordagem</th><th>Limitações</th></tr></thead>
         <tbody>
-            <tr><td><strong>Fisioterapia Convencional</strong></td><td>Cinesioterapia assistida manualmente pelo terapeuta.</td><td><span class="lim">Falta de repetibilidade exata e ausência de biofeedback digital quantitativo.</span></td></tr>
-            <tr><td><strong>Estimulação Elétrica (FES)</strong></td><td>Injeção de trens de pulso elétricos para contração artificial.</td><td><span class="lim">Despoleta fadiga periférica precoce e ignora o esforço cortical voluntário.</span></td></tr>
-            <tr><td><strong>Exoesqueletos EMG Baseados em MVC</strong></td><td>Controlo mioelétrico mapeado por força voluntária máxima.</td><td><span class="lim">Inviável para pacientes neurológicos debilitados; induz risco de lesão muscular.</span></td></tr>
-            <tr><td><strong>Controlo de Trajetória Rígido</strong></td><td>O motor executa uma posição fixa (posição pura), forçando o braço.</td><td><span class="lim">Provoca o fenómeno de slacking (anulação do esforço ativo do paciente).</span></td></tr>
-            <tr class="hl"><td>✦ Abordagem ReMotion</td><td>Mapeamento subMVC + Impedância Assist-As-Needed + Modelo de Fadiga.</td><td style="color:#4dffa0;">✓ Maximiza a neuroplasticidade, garante segurança mecânica e adapta-se ao cansaço biológico.</td></tr>
+            <tr><td><strong>Fisioterapia Convencional</strong></td><td>Exercícios assistidos manualmente pelo fisioterapeuta.</td><td><span class="lim">Elevada repetibilidade e ausência de biofeedback.</span></td></tr>
+            <tr><td><strong>Estimulação Elétrica (FES)</strong></td><td>Injeção de impulsos elétricos para contração muscular.</td><td><span class="lim">Gera fadiga precoce e ignora o esforço voluntário do paciente.</span></td></tr>
+            <tr><td><strong>Exoesqueletos EMG baseados em MVC</strong></td><td>Controlo eletromiográfico calibrado por contração voluntária máxima.</td><td><span class="lim">Inviável para pacientes neurológicos debilitados pois induz risco de lesão muscular.</span></td></tr>
+            <tr><td><strong>Controlo por Posição</strong></td><td>O motor executa uma posição fixa, forçando o braço.</td><td><span class="lim">Provoca um movimento pouco natural e excesso de dependência.</span></td></tr>
+            <tr class="hl"><td>✦ ReMotion</td><td>Calibração com subMVC + Sistema Assist-As-Needed + Deteção de Fadiga.</td><td><span class="lim">Ausência de movimento sem sinal EMG e sem acesso direto à intenção pura do paciente</td></tr>
         </tbody>
     </table>
 </div>
 """, unsafe_allow_html=True)
 
 # ── RESULTADOS DAS SIMULAÇÕES (MATLAB / MUJOCO) ───────────────────────────────
-st.markdown('<div class="section"><div class="section-title">📊 Resultados e Validação Computacional</div></div>', unsafe_allow_html=True)
+st.markdown('<div class="section"><div class="section-title">📊 Resultados e Validação</div></div>', unsafe_allow_html=True)
 
 res_c1, res_c2 = st.columns(2, gap="large")
 
 with res_c1:
     st.markdown("""
     <div style="background:rgba(10,35,65,0.5); padding:1.5rem; border-radius:16px; border:1px solid rgba(100,180,255,0.1); height:100%;">
-        <h5 style="color:#7ecfff; font-family:'Sora',sans-serif; margin-top:0;">Scenario A: Paciente Saudável / Controlo Ativo</h5>
-        <p style="font-size:0.9rem; margin-bottom:0.5rem;">Nos ensaios onde o torque humano simulado acompanha estritamente os perfis de ativação, o erro cinemático mantém-se residual.</p>
+        <h5 style="color:#7ecfff; font-family:'Sora',sans-serif; margin-top:0;">Paciente Saudável</h5>
+        <p style="font-size:0.9rem; margin-bottom:0.5rem;">Nos ensaios onde o torque humano simulado acompanha o torque desejado para o movimento, o erro de posição mantém-se residual.</p>
         <ul style="font-size:0.85rem; color:#a0c0e0; padding-left:1.2rem;">
-            <li>O exoesqueleto opera em modo de transparência cinemática (binário mínimo).</li>
-            <li>O utilizador comanda de forma soberana a flexão até aos 135°.</li>
-            <li>O modelo dinâmico regista estabilidade metabólica (sem acumulação de fadiga).</li>
+            <li>O exoesqueleto opera em modo de transparência (quase não atua).</li>
+            <li>O utilizador consegue participar na flexão toda.</li>
         </ul>
     </div>
     """, unsafe_allow_html=True)
@@ -260,12 +273,11 @@ with res_c1:
 with res_c2:
     st.markdown("""
     <div style="background:rgba(10,35,65,0.5); padding:1.5rem; border-radius:16px; border:1px solid rgba(100,180,255,0.1); height:100%;">
-        <h5 style="color:#ff9a9a; font-family:'Sora',sans-serif; margin-top:0;">Scenario B: Paciente Debilitado com Fadiga</h5>
-        <p style="font-size:0.9rem; margin-bottom:0.5rem;">Simulação de fadiga muscular severa ou incapacidade motora abrupta a meio do exercício:</p>
+        <h5 style="color:#ff9a9a; font-family:'Sora',sans-serif; margin-top:0;"> Paciente Debilitado </h5>
+        <p style="font-size:0.9rem; margin-bottom:0.5rem;">Simulação de um sinal EMG debilitado:</p>
         <ul style="font-size:0.85rem; color:#a0c0e0; padding-left:1.2rem;">
-            <li>O desvio angular despoleta o crescimento imediato do erro de rampa.</li>
-            <li>Ao cruzar o limiar de segurança, a rigidez do controlador ($K$) eleva-se para 40 Nm/rad.</li>
-            <li>O atuador do exoesqueleto assume o torque em falta, corrigindo a trajetória e guiando o braço em segurança.</li>
+            <li>O erro de posição gera um maior torque do motor.</li>
+            <li>O motor do exoesqueleto assume o torque em falta, corrigindo a trajetória e guiando o braço em segurança.</li>
         </ul>
     </div>
     """, unsafe_allow_html=True)
@@ -273,7 +285,7 @@ with res_c2:
 st.markdown("<br>", unsafe_allow_html=True)
 
 # ── EQUIPA CIENTÍFICA (PI) ───────────────────────────────────────────────────
-st.markdown('<div class="section"><div class="section-title">👩‍🔬 Autores do Projeto</div><p>Equipa de projeto responsável pelo desenvolvimento do modelo matemático de controlo, simulação dinâmica e desenho mecânico do sistema ReMotion na unidade curricular de Projeto Integrador.</p></div>', unsafe_allow_html=True)
+st.markdown('<div class="section"><div class="section-title">👩‍🔬 Autores do Projeto</div><p>Equipa de projeto responsável pelo desenvolvimento do modelo matemático de controlo, simulação dinâmica e desenho mecânico do sistema ReMotion no âmbito da unidade curricular "Projeto Integrador em Engenharia Biomédica".</p></div>', unsafe_allow_html=True)
 
 col_photo, col_names = st.columns([1.1, 1], gap="large")
 
@@ -282,7 +294,7 @@ with col_photo:
         st.markdown(f"""
         <div style="padding:1rem;background:rgba(13,61,110,0.3);border:1px solid rgba(100,180,255,0.12);border-radius:18px;text-align:center;">
             {team_tag}
-            <p style="font-size:0.78rem;color:#5a8ab0;margin-top:0.8rem;margin-bottom:0;">A equipa ReMotion em Laboratório</p>
+            <p style="font-size:0.78rem;color:#5a8ab0;margin-top:0.8rem;margin-bottom:0;">A equipa ReMotion</p>
         </div>
         """, unsafe_allow_html=True)
     else:
@@ -311,7 +323,7 @@ with col_names:
 # ── FOOTER CIENTÍFICO ─────────────────────────────────────────────────────────
 st.markdown("""
 <div class="footer">
-    <strong>ReMotion</strong> — Modelação e Controlo Adaptativo de Ortóteses Ativas.<br>
+    <strong>ReMotion</strong> — Mais que movimento, devolvemos independência.<br>
     Licenciatura em Engenharia Biomédica · Universidade do Minho<br>
     <strong>UC: Projeto Integrador em Engenharia Biomédica</strong><br><br>
     <span style="color:#5a8ab0; font-size:0.8rem; line-height:1.6; display:block; max-width:800px; margin:0 auto;">
